@@ -105,7 +105,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Users\\jj112\\OneDrive\\바탕 화면\\palmy",
+    "outputFileTracingRoot": "E:\\palmy",
     "enablePrerenderSourceMaps": true,
     "cacheComponents": false,
     "cacheLife": {
@@ -334,13 +334,13 @@
     "htmlLimitedBots": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight",
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.js",
-    "repoRoot": "C:\\Users\\jj112\\OneDrive\\바탕 화면\\palmy",
+    "repoRoot": "E:\\palmy",
     "turbopack": {
-      "root": "C:\\Users\\jj112\\OneDrive\\바탕 화면\\palmy"
+      "root": "E:\\palmy"
     },
     "distDirRoot": ".next"
   },
-  "appDir": "C:\\Users\\jj112\\OneDrive\\바탕 화면\\palmy",
+  "appDir": "E:\\palmy",
   "relativeAppDir": "",
   "files": [
     ".next\\package.json",
