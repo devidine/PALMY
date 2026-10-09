@@ -1,0 +1,43 @@
+{
+  "sorted_middleware": [
+    "/api/checkout/route"
+  ],
+  "middleware": {},
+  "instrumentation": null,
+  "functions": {
+    "/api/checkout/route": {
+      "files": [
+        "server/middleware-build-manifest.js",
+        "server/interception-route-rewrite-manifest.js",
+        "server/server-reference-manifest.js",
+        "server/app/api/checkout/route_client-reference-manifest.js",
+        "server/edge/chunks/_next-internal_server_app_api_checkout_route_actions_1d2-m1g7vkp5_.js",
+        "server/edge/chunks/node_modules_next_dist_esm_shared_lib_214j1ke7s2zz_._.js",
+        "server/edge/chunks/node_modules_next_dist_esm_server_1uvdeihyf5pa9._.js",
+        "server/edge/chunks/node_modules_next_dist_esm_216c392ilsb-l._.js",
+        "server/edge/chunks/node_modules_next_dist_compiled_0hidr0dpvnlga._.js",
+        "server/edge/chunks/node_modules_next_dist_17lgfze6brfoa._.js",
+        "server/edge/chunks/[root-of-the-server]__1oywzv79xx9q4._.js",
+        "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0mx74xe08byi6.js"
+      ],
+      "name": "app/api/checkout/route",
+      "page": "/api/checkout/route",
+      "entrypoint": "server/edge/chunks/turbopack-node_modules_next_dist_esm_build_templates_edge-wrapper_0mx74xe08byi6.js",
+      "matchers": [
+        {
+          "regexp": "^/api/checkout(?:/)?$",
+          "originalSource": "/api/checkout"
+        }
+      ],
+      "wasm": [],
+      "assets": [],
+      "env": {
+        "__NEXT_BUILD_ID": "development",
+        "NEXT_SERVER_ACTIONS_ENCRYPTION_KEY": "LQBfBXUpQEEGb7WiFWWn4lDZOPsw5Pqr6CdeV6rTUo8=",
+        "__NEXT_PREVIEW_MODE_ID": "ce669aec307bb68f1b5e32e81478a01a",
+        "__NEXT_PREVIEW_MODE_ENCRYPTION_KEY": "4d5a5157bb23c29d953cb3a574f74a1362c31a63bd63838a639d8bd87d037d0b",
+        "__NEXT_PREVIEW_MODE_SIGNING_KEY": "be2ad0d85197709283a5f03521179774d161ad25af626292f1e121ee488e032a"
+      }
+    }
+  }
+}

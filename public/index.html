@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PALMY | Premium Collection</title>
+    <meta name="description" content="Discover the latest premium fashion collection at PALMY. Explore our shirts, pants, hoodies, and accessories.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        palmy: {
+                            50: '#f9f9f9',
+                            100: '#f2f2f2',
+                            900: '#111111',
+                            red: '#ff3333',
+                        }
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'slide-in-right': 'slideInRight 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)' },
+                            '100%': { transform: 'translateX(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base & Reset */
+        :root {
+            --bg-color: #fcfcfc;
+            --text-primary: #111111;
+        }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* Intro Animation */
+        .intro-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: #ffffff;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.8, 0, 0.2, 1), transform 0.8s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+        .intro-logo {
+            animation: introDrawScale 2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            opacity: 0;
+        }
+        @keyframes introDrawScale {
+            0% { opacity: 0; transform: scale(0.95) translateY(10px); filter: blur(4px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+        }
+
+        /* Scroll Reveal */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .reveal-on-scroll.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Product Card Effects */
+        .product-card {
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+        }
+        .product-card:hover {
+            transform: translateY(-6px);
+        }
+        .product-image-container {
+            overflow: hidden;
+            border-radius: 0.5rem;
+        }
+        .product-image {
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform;
+        }
+        .product-card:hover .product-image {
+            transform: scale(1.08);
+        }
+        .cart-btn {
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+        .product-card:hover .cart-btn {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+        /* Mobile Sidebar Overlay */
+        .sidebar-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .sidebar-menu {
+            transform: translateX(-100%); /* Left side */
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .sidebar-menu.active {
+            transform: translateX(0);
+        }
+        
+        /* Navigation Links Underline Effect */
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -4px;
+            left: 0;
+            background-color: currentColor;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #111;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 10000;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Cart Sidebar */
+        .cart-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .cart-sidebar.active {
+            transform: translateX(0);
+        }
+        
+        /* Search Overlay */
+        .search-overlay {
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .search-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body class="bg-palmy-50 text-palmy-900 font-sans selection:bg-palmy-900 selection:text-white">
+
+    <!-- Intro Animation -->
+    <div id="intro-overlay" class="intro-overlay">
+        <img src="1.png" alt="PALMY" class="intro-logo w-40 md:w-56 object-contain" onerror="this.src='https://placehold.co/400x150/ffffff/000000?text=PALMY&font=playfair'" />
+    </div>
+
+    <!-- Mobile Sidebar Menu -->
+    <div id="sidebar-overlay" class="sidebar-overlay fixed inset-0 bg-black/40 backdrop-blur-sm z-50"></div>
+    <aside id="sidebar-menu" class="sidebar-menu fixed top-0 left-0 h-full w-4/5 max-w-sm bg-white z-[60] shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-gray-100">
+            <span class="font-serif text-2xl font-bold tracking-tight">PALMY</span>
+            <button id="close-sidebar" class="p-2 -mr-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-8 px-6 flex flex-col gap-6">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Categories</div>
+            <a href="#shirt" class="filter-btn text-2xl font-medium text-gray-800 hover:text-black hover:translate-x-2 transition-all" data-filter="shirt">Shirt</a>
+            <a href="#pants" class="filter-btn text-2xl font-medium text-gray-800 hover:text-black hover:translate-x-2 transition-all" data-filter="pants">Pants</a>
+            <a href="#hoodie" class="filter-btn text-2xl font-medium text-gray-800 hover:text-black hover:translate-x-2 transition-all" data-filter="hoodie">Hoodie</a>
+            <a href="#accessories" class="filter-btn text-2xl font-medium text-gray-800 hover:text-black hover:translate-x-2 transition-all" data-filter="accessories">Accessories</a>
+            
+            <div class="mt-8 pt-8 border-t border-gray-100 text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Account</div>
+            <a href="#login" class="text-lg font-medium text-gray-800 hover:text-black transition-colors flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                Login / Register
+            </a>
+        </nav>
+        <div class="p-6 bg-gray-50 border-t border-gray-100">
+            <p class="text-xs text-gray-500">© 2026 PALMY. Premium Apparel.</p>
+        </div>
+    </aside>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white/85 backdrop-blur-lg border-b border-gray-100 transition-all duration-300" id="main-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                
+                <!-- Left: Hamburger (Mobile) & Nav (Desktop) -->
+                <div class="flex items-center w-1/3">
+                    <button id="open-sidebar" class="md:hidden p-2 -ml-2 text-gray-800 hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    
+                    <nav class="hidden md:flex items-center gap-8">
+                        <a href="#shirt" class="filter-btn nav-link text-sm font-medium text-gray-600 hover:text-black transition-colors" data-filter="shirt">Shirt</a>
+                        <a href="#pants" class="filter-btn nav-link text-sm font-medium text-gray-600 hover:text-black transition-colors" data-filter="pants">Pants</a>
+                        <a href="#hoodie" class="filter-btn nav-link text-sm font-medium text-gray-600 hover:text-black transition-colors" data-filter="hoodie">Hoodie</a>
+                        <a href="#accessories" class="filter-btn nav-link text-sm font-medium text-gray-600 hover:text-black transition-colors" data-filter="accessories">Accessories</a>
+                    </nav>
+                </div>
+
+                <!-- Center: Logo -->
+                <div class="flex justify-center w-1/3">
+                    <a href="#" id="logo-btn" class="hover:opacity-70 transition-opacity flex flex-col items-center group">
+                        <img src="1.png" alt="PALMY" class="h-8 md:h-10 object-contain group-hover:scale-105 transition-transform duration-300" onerror="this.src='https://placehold.co/150x40/ffffff/000000?text=PALMY&font=playfair'" />
+                    </a>
+                </div>
+
+                <!-- Right: Actions -->
+                <div class="flex justify-end items-center gap-4 w-1/3">
+                    <button id="search-btn" class="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition-all focus:outline-none">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </button>
+                    <button id="account-btn" class="hidden sm:flex items-center gap-2 group p-2 rounded-full hover:bg-gray-100 transition-all focus:outline-none">
+                        <div class="w-8 h-8 rounded-full bg-palmy-900 text-white flex items-center justify-center group-hover:bg-palmy-red transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                        </div>
+                    </button>
+                    <button id="cart-btn-header" class="p-2 text-gray-600 hover:text-black hover:bg-gray-100 rounded-full transition-all focus:outline-none relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span id="cart-count" class="absolute top-1 right-1 w-4 h-4 bg-palmy-red rounded-full text-[10px] text-white flex items-center justify-center font-bold hidden">0</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner (Added for Masterpiece feel) -->
+    <section class="relative w-full h-[60vh] md:h-[70vh] bg-gray-100 overflow-hidden">
+        <img src="2.jpg" alt="Hero Banner" class="absolute inset-0 w-full h-full object-cover object-center" onerror="this.src='https://images.unsplash.com/photo-1523381210434-271e8be1f52b?auto=format&fit=crop&q=80&w=2000'"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+        <div class="absolute inset-0 flex flex-col justify-end items-center text-center pb-20 px-4">
+            <h1 class="font-serif text-4xl md:text-6xl text-white font-bold mb-4 drop-shadow-lg reveal-on-scroll">The New Standard</h1>
+            <p class="text-white/90 text-sm md:text-base max-w-md mx-auto mb-8 font-light reveal-on-scroll" style="transition-delay: 100ms;">Discover our latest collection designed for the modern aesthetic. Uncompromising quality and timeless style.</p>
+            <a href="#collection" class="inline-block bg-white text-black px-8 py-3 rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors duration-300 reveal-on-scroll" style="transition-delay: 200ms;">Shop Collection</a>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main id="collection" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 min-h-screen">
+        
+        <div class="flex justify-between items-end mb-10 reveal-on-scroll">
+            <div>
+                <h2 class="text-2xl md:text-3xl font-serif font-bold text-gray-900">New Arrivals</h2>
+                <p class="text-gray-500 text-sm mt-2">Latest essentials for your wardrobe.</p>
+            </div>
+            <a href="#" id="view-all-btn" class="hidden sm:inline-block text-sm font-medium text-black border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">View All</a>
+        </div>
+
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 sm:gap-x-6 sm:gap-y-16" id="product-grid">
+            
+            <!-- Product 1 -->
+            <div class="product-card cursor-pointer group reveal-on-scroll">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.jpg" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    
+                    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2 py-1 text-[10px] font-bold text-palmy-900 tracking-wider uppercase rounded-sm shadow-sm z-10">NEW</div>
+                    
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 오버핏 후디 2COLOR</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">39,900원</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 100ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="3.jpg" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 에센셜 로고 맨투맨</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">39,900원</span>
+                        <span class="text-xs font-medium text-gray-400 line-through">49,000원</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 200ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    
+                    <div class="absolute top-3 left-3 bg-palmy-red px-2 py-1 text-[10px] font-bold text-white tracking-wider rounded-sm shadow-sm z-10">-20%</div>
+
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 와이드 핏 데님 팬츠</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-palmy-red">39,900원</span>
+                        <span class="text-xs font-medium text-gray-400 line-through">49,900원</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product 4 -->
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 300ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 시그니처 로고 볼캡</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">29,000원</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Additional Products can be easily appended here -->
+            <div class="product-card cursor-pointer group reveal-on-scroll">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 베이직 옥스포드 셔츠</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">45,000원</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 100ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 카고 스트링 팬츠</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">59,000원</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 200ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 헤비웨이트 집업 후디</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">65,000원</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="product-card cursor-pointer group reveal-on-scroll" style="transition-delay: 300ms;">
+                <div class="product-image-container relative aspect-[4/5] bg-white border border-gray-100 shadow-sm p-0 sm:p-2">
+                    <img src="2.png" alt="Product" class="product-image object-cover w-full h-full rounded-sm" onerror="this.src='https://placehold.co/400x500/f3f4f6/a1a1aa?text=Image'"/>
+                    <button class="cart-btn absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/90 backdrop-blur-sm text-white px-4 py-2 rounded-full text-xs font-medium flex items-center gap-2 hover:bg-black z-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+                        Add to Cart
+                    </button>
+                </div>
+                <div class="mt-5 flex flex-col gap-1 px-1">
+                    <h3 class="text-sm font-medium text-gray-900 group-hover:text-gray-600 transition-colors">[PALMY] 레더 스퀘어 백</h3>
+                    <div class="flex items-center gap-3 mt-1">
+                        <span class="text-sm font-semibold text-gray-900">89,000원</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="mt-16 text-center sm:hidden reveal-on-scroll">
+            <a href="#" id="view-all-btn-mobile" class="inline-block border border-black px-8 py-3 rounded-full text-sm font-medium hover:bg-black hover:text-white transition-colors">View All Products</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full bg-palmy-900 text-white pt-16 pb-8 reveal-on-scroll">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <div class="md:col-span-1">
+                    <p class="font-serif text-3xl font-bold mb-6 tracking-tight">PALMY</p>
+                    <p class="text-gray-400 text-sm leading-relaxed">Elevating everyday essentials through premium materials and uncompromising design.</p>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-5">Shop</h4>
+                    <ul class="flex flex-col gap-3 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">New Arrivals</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Best Sellers</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Collections</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-5">Support</h4>
+                    <ul class="flex flex-col gap-3 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Shipping & Returns</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-sm font-semibold uppercase tracking-wider mb-5">Newsletter</h4>
+                    <p class="text-gray-400 text-sm mb-4">Subscribe to receive updates, access to exclusive deals, and more.</p>
+                    <div class="flex border-b border-gray-700 pb-2">
+                        <input type="email" id="newsletter-input" placeholder="Enter your email address" class="bg-transparent border-none outline-none text-sm text-white w-full placeholder-gray-500">
+                        <button id="newsletter-btn" class="text-sm font-medium hover:text-gray-300 transition-colors">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <p>© 2026 PALMY. All rights reserved.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="#" class="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart Sidebar -->
+    <div id="cart-overlay" class="sidebar-overlay fixed inset-0 bg-black/40 backdrop-blur-sm z-50"></div>
+    <aside id="cart-sidebar" class="cart-sidebar fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white z-[60] shadow-2xl flex flex-col">
+        <div class="p-6 flex justify-between items-center border-b border-gray-100">
+            <span class="font-serif text-xl font-bold tracking-tight">Your Cart</span>
+            <button id="close-cart" class="p-2 -mr-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div id="cart-items" class="flex-1 overflow-y-auto p-6 flex flex-col gap-6">
+            <div class="text-gray-400 text-sm text-center mt-10">Your cart is empty.</div>
+        </div>
+        <div class="p-6 bg-gray-50 border-t border-gray-100">
+            <div class="flex justify-between items-center mb-4">
+                <span class="text-sm font-medium text-gray-600">Total</span>
+                <span id="cart-total" class="text-lg font-bold text-gray-900">0원</span>
+            </div>
+            <button class="w-full bg-black text-white py-3 rounded-full text-sm font-medium hover:bg-gray-800 transition-colors">Checkout</button>
+        </div>
+    </aside>
+
+    <!-- Search Overlay -->
+    <div id="search-overlay" class="search-overlay fixed inset-0 bg-white z-[70] flex flex-col items-center justify-start pt-20 px-4">
+        <button id="close-search" class="absolute top-6 right-6 p-2 text-gray-500 hover:text-black hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </button>
+        <div class="w-full max-w-2xl">
+            <div class="relative">
+                <input type="text" id="search-input" placeholder="Search for products..." class="w-full text-2xl md:text-4xl font-serif border-b-2 border-gray-200 focus:border-black outline-none pb-4 bg-transparent transition-colors placeholder-gray-300">
+                <button class="absolute right-0 bottom-4 text-gray-400 hover:text-black transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 md:w-8 md:h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </button>
+            </div>
+            <div class="mt-8 text-sm text-gray-500">Popular searches: Hoodie, Denim, Essential</div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Action successful!</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Intro Animation Logic
+            const introOverlay = document.getElementById('intro-overlay');
+            if(introOverlay) {
+                setTimeout(() => {
+                    introOverlay.style.opacity = '0';
+                    introOverlay.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        introOverlay.style.display = 'none';
+                        initializeScrollObserver();
+                    }, 800);
+                }, 2500); // adjust time as needed
+            } else {
+                initializeScrollObserver();
+            }
+
+            // Logo smooth scroll to top
+            const logoBtn = document.getElementById('logo-btn');
+            if(logoBtn) {
+                logoBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Scroll Reveal Observer
+            function initializeScrollObserver() {
+                const observerOptions = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.1
+                };
+
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.reveal-on-scroll').forEach((element) => {
+                    observer.observe(element);
+                });
+            }
+
+            // Mobile Sidebar Logic
+            const sidebarMenu = document.getElementById('sidebar-menu');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const openSidebarBtn = document.getElementById('open-sidebar');
+            const closeSidebarBtn = document.getElementById('close-sidebar');
+            const sidebarLinks = sidebarMenu.querySelectorAll('a');
+
+            function openSidebar() {
+                sidebarMenu.classList.add('active');
+                sidebarOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden'; // Prevent scrolling
+            }
+
+            function closeSidebar() {
+                sidebarMenu.classList.remove('active');
+                sidebarOverlay.classList.remove('active');
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+
+            if(openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+            if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+            if(sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+            
+            // Close sidebar when a link is clicked
+            sidebarLinks.forEach(link => {
+                link.addEventListener('click', closeSidebar);
+            });
+            
+            // Header Scroll Effect (Optional: add shadow on scroll)
+            const header = document.getElementById('main-header');
+            window.addEventListener('scroll', () => {
+                if(window.scrollY > 10) {
+                    header.classList.add('shadow-sm');
+                } else {
+                    header.classList.remove('shadow-sm');
+                }
+            });
+
+            // Dynamically assign categories and product info for cart
+            const products = document.querySelectorAll('.product-card');
+            products.forEach((product, index) => {
+                const titleEl = product.querySelector('h3');
+                const title = titleEl ? titleEl.textContent : 'Product';
+                
+                let category = 'accessories';
+                if (title.includes('후디')) category = 'hoodie';
+                else if (title.includes('맨투맨') || title.includes('셔츠')) category = 'shirt';
+                else if (title.includes('팬츠')) category = 'pants';
+                
+                product.dataset.category = category;
+
+                const priceEl = product.querySelector('.flex.items-center.gap-3.mt-1 span:first-child');
+                let priceText = priceEl ? priceEl.textContent : '0';
+                let price = parseInt(priceText.replace(/[^0-9]/g, ''));
+
+                const imgEl = product.querySelector('.product-image');
+                let image = imgEl ? imgEl.getAttribute('src') : '1.png';
+
+                const cartBtn = product.querySelector('.cart-btn');
+                if (cartBtn) {
+                    cartBtn.classList.add('add-to-cart-btn');
+                    cartBtn.dataset.id = index + 1;
+                    cartBtn.dataset.name = title;
+                    cartBtn.dataset.price = price;
+                    cartBtn.dataset.image = image;
+                }
+            });
+
+            // Toast Notification
+            function showToast(message) {
+                const toast = document.getElementById('toast');
+                toast.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+
+            // Filtering
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const viewAllBtns = document.querySelectorAll('#view-all-btn, #view-all-btn-mobile');
+
+            function filterProducts(category) {
+                products.forEach(product => {
+                    if (category === 'all' || product.dataset.category === category) {
+                        product.style.display = 'block';
+                        setTimeout(() => {
+                            product.style.opacity = '1';
+                            product.style.transform = 'translateY(0)';
+                        }, 50);
+                    } else {
+                        product.style.opacity = '0';
+                        product.style.transform = 'translateY(20px)';
+                        setTimeout(() => {
+                            product.style.display = 'none';
+                        }, 400);
+                    }
+                });
+            }
+
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = btn.dataset.filter;
+                    filterProducts(category);
+                    if (window.innerWidth < 768) closeSidebar();
+                    document.getElementById('collection').scrollIntoView({ behavior: 'smooth' });
+                });
+            });
+
+            viewAllBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    filterProducts('all');
+                });
+            });
+
+            // Cart Logic
+            let cart = [];
+            const cartBtnHeader = document.getElementById('cart-btn-header');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const cartSidebar = document.getElementById('cart-sidebar');
+            const closeCartBtn = document.getElementById('close-cart');
+            const cartItemsContainer = document.getElementById('cart-items');
+            const cartTotalEl = document.getElementById('cart-total');
+            const cartCountEl = document.getElementById('cart-count');
+            const addToCartBtns = document.querySelectorAll('.add-to-cart-btn');
+
+            function openCart() {
+                cartSidebar.classList.add('active');
+                cartOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeCart() {
+                cartSidebar.classList.remove('active');
+                cartOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+
+            cartBtnHeader.addEventListener('click', openCart);
+            closeCartBtn.addEventListener('click', closeCart);
+            cartOverlay.addEventListener('click', closeCart);
+
+            function updateCartUI() {
+                cartItemsContainer.innerHTML = '';
+                let total = 0;
+                let count = 0;
+
+                if (cart.length === 0) {
+                    cartItemsContainer.innerHTML = '<div class="text-gray-400 text-sm text-center mt-10">Your cart is empty.</div>';
+                    cartCountEl.classList.add('hidden');
+                } else {
+                    cartCountEl.classList.remove('hidden');
+                    cart.forEach((item, index) => {
+                        total += item.price * item.quantity;
+                        count += item.quantity;
+                        const itemEl = document.createElement('div');
+                        itemEl.className = 'flex gap-4 border-b border-gray-100 pb-4';
+                        itemEl.innerHTML = `
+                            <img src="${item.image}" alt="${item.name}" class="w-20 h-24 object-cover rounded-sm" onerror="this.src='https://placehold.co/80x100'">
+                            <div class="flex-1 flex flex-col justify-between">
+                                <div>
+                                    <h4 class="text-sm font-medium text-gray-900">${item.name}</h4>
+                                    <div class="text-sm text-gray-500 mt-1">${item.price.toLocaleString()}원</div>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="flex items-center gap-2 border border-gray-200 rounded-sm px-2 py-1">
+                                        <button class="text-gray-500 hover:text-black dec-btn" data-index="${index}">-</button>
+                                        <span class="text-xs font-medium w-4 text-center">${item.quantity}</span>
+                                        <button class="text-gray-500 hover:text-black inc-btn" data-index="${index}">+</button>
+                                    </div>
+                                    <button class="text-xs text-gray-400 hover:text-palmy-red transition-colors rm-btn" data-index="${index}">Remove</button>
+                                </div>
+                            </div>
+                        `;
+                        cartItemsContainer.appendChild(itemEl);
+                    });
+                }
+                
+                cartTotalEl.textContent = total.toLocaleString() + '원';
+                cartCountEl.textContent = count;
+
+                // Bind events to new buttons
+                document.querySelectorAll('.inc-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        cart[btn.dataset.index].quantity++;
+                        updateCartUI();
+                    });
+                });
+                document.querySelectorAll('.dec-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        if (cart[btn.dataset.index].quantity > 1) {
+                            cart[btn.dataset.index].quantity--;
+                        } else {
+                            cart.splice(btn.dataset.index, 1);
+                        }
+                        updateCartUI();
+                    });
+                });
+                document.querySelectorAll('.rm-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        cart.splice(btn.dataset.index, 1);
+                        updateCartUI();
+                    });
+                });
+            }
+
+            addToCartBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const id = btn.dataset.id;
+                    const name = btn.dataset.name;
+                    const price = parseInt(btn.dataset.price);
+                    const image = btn.dataset.image;
+
+                    const existingItem = cart.find(item => item.id === id);
+                    if (existingItem) {
+                        existingItem.quantity++;
+                    } else {
+                        cart.push({ id, name, price, image, quantity: 1 });
+                    }
+                    updateCartUI();
+                    showToast('Item added to cart');
+                });
+            });
+
+            // Search Overlay Logic
+            const searchBtn = document.getElementById('search-btn');
+            const searchOverlay = document.getElementById('search-overlay');
+            const closeSearchBtn = document.getElementById('close-search');
+            const searchInput = document.getElementById('search-input');
+
+            searchBtn.addEventListener('click', () => {
+                searchOverlay.classList.add('active');
+                setTimeout(() => searchInput.focus(), 300);
+            });
+            closeSearchBtn.addEventListener('click', () => {
+                searchOverlay.classList.remove('active');
+            });
+
+            // Newsletter Logic
+            const newsletterBtn = document.getElementById('newsletter-btn');
+            const newsletterInput = document.getElementById('newsletter-input');
+            newsletterBtn.addEventListener('click', async () => {
+                const email = newsletterInput.value.trim();
+                if (email !== '') {
+                    try {
+                        const response = await fetch('/api/subscribe', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email })
+                        });
+                        const result = await response.json();
+                        if (result.success) {
+                            showToast(result.message);
+                            newsletterInput.value = '';
+                        } else {
+                            showToast(result.message || 'Subscription failed.');
+                        }
+                    } catch (error) {
+                        showToast('An error occurred.');
+                    }
+                } else {
+                    showToast('Please enter an email address.');
+                }
+            });
+
+            // Checkout Logic
+            const checkoutBtn = document.querySelector('.cart-sidebar .bg-black.text-white');
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', async () => {
+                    if (cart.length === 0) {
+                        showToast('Your cart is empty.');
+                        return;
+                    }
+                    
+                    const btnOriginalText = checkoutBtn.textContent;
+                    checkoutBtn.textContent = 'Processing...';
+                    checkoutBtn.disabled = true;
+
+                    try {
+                        const response = await fetch('/api/checkout', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ cart })
+                        });
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            showToast(result.message);
+                            cart = []; // Empty cart
+                            updateCartUI();
+                            setTimeout(() => closeCart(), 1000);
+                        } else {
+                            showToast(result.message || 'Checkout failed.');
+                        }
+                    } catch (error) {
+                        showToast('An error occurred during checkout.');
+                    } finally {
+                        checkoutBtn.textContent = btnOriginalText;
+                        checkoutBtn.disabled = false;
+                    }
+                });
+            }
+
+            // Account btn toast
+            const accountBtn = document.getElementById('account-btn');
+            if(accountBtn) {
+                accountBtn.addEventListener('click', () => {
+                    showToast('Login modal coming soon.');
+                });
+            }
+        });
+
+    </script>
+</body>
+</html>
